@@ -64,6 +64,16 @@ docker-compose up
 | `REGEX_BASE_CONFIDENCE` | `0.4` | Regex match without context keyword |
 | `REGEX_CONTEXT_CONFIDENCE` | `0.99` | Regex match with context keyword |
 
+## Logging Requirements
+
+All code must include thorough logging for debuggability:
+- Use Python's `logging` module (`logger = logging.getLogger(__name__)`) in every module
+- Log at `ERROR` level with `exc_info=True` for all caught exceptions — never silently swallow errors with bare `pass` or `except: pass`
+- Log at `INFO` level for significant state changes: startup/shutdown, connections established/lost, configuration loaded, external service status
+- Log at `DEBUG` level for request/response details, detection results, masking operations, and other per-request data useful for troubleshooting
+- Always include relevant context in log messages (session IDs, request IDs, entity counts, endpoint URLs, etc.)
+- When integrating with external services (Triton, LLM, Redis), log connection attempts, failures, and fallback behavior
+
 ## Architecture Notes
 
 - **Detection** runs regex + NER in parallel; `SpanMerger` resolves overlaps (higher confidence wins, NER preferred over regex for same span)
