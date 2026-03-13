@@ -1,0 +1,33 @@
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+services:
+  triton:
+    # Full Triton image includes onnxruntime backend for CPU inference.
+    # Run scripts/export_onnx.py first to create triton_model_repo/bert_base_ner/1/model.onnx
+    image: nvcr.io/nvidia/tritonserver:24.01-py3
+    command: tritonserver --model-repository=/models
+    volumes:
+      - ./triton_model_repo:/models
+    ports:
+      - "8001:8001"
+    # CPU-only: no GPU/deploy config needed
+
+  pii-proxy:
+    build: .
+    env_file:
+      - ../.env
+    ports:
+      - "9000:9000"
+    depends_on:
+      - triton
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD:-changeme}
+    ports:
+      - "6379:6379"
