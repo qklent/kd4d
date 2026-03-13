@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import json
+import logging
 import time
 import uuid
 from contextlib import asynccontextmanager
+
+logger = logging.getLogger(__name__)
 
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
@@ -59,9 +62,11 @@ async def lifespan(app: FastAPI):
             label_map=label_map,
             confidence_threshold=settings.ner_confidence_threshold,
         )
+        if not await ner.client.is_server_ready():
+            raise ConnectionError("Triton server is not ready")
         detectors.append(ner)
     except Exception:
-        pass  # Run with regex-only detection
+        logger.error("Triton NER unavailable, falling back to regex-only detection", exc_info=True)
 
     detection_pipeline = DetectionPipeline(detectors=detectors, merger=SpanMerger())
     masker = PIIMasker()
