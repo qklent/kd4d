@@ -14,10 +14,8 @@ services:
 
   pii-proxy:
     build: .
-    environment:
-      TRITON_URL: "triton:8001"
-      LLM_BASE_URL: "http://llm-server:8000/v1"
-      VAULT_TTL: "3600"
+    env_file:
+      - ../.env
     ports:
       - "9000:9000"
     depends_on:
