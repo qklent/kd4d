@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 9000
 
-    model_config = {"env_prefix": "", "case_sensitive": False}
+    model_config = {"env_prefix": "", "case_sensitive": False, "env_file": ".env", "env_file_encoding": "utf-8"}
 
 
 settings = Settings()
