@@ -48,12 +48,14 @@ async def lifespan(app: FastAPI):
     try:
         from .detection.triton_ner import TritonNERDetector
 
-        # Default BIO label map (override via config for your model)
+        # BIO label map for dslim/bert-base-NER (CoNLL-2003, 9 labels)
+        # See: https://huggingface.co/dslim/bert-base-NER
         label_map = {
             0: "O",
-            1: "B-PER", 2: "I-PER",
-            3: "B-LOC", 4: "I-LOC",
-            5: "B-ORG", 6: "I-ORG",
+            1: "B-MISC", 2: "I-MISC",
+            3: "B-PER",  4: "I-PER",
+            5: "B-ORG",  6: "I-ORG",
+            7: "B-LOC",  8: "I-LOC",
         }
         ner = TritonNERDetector(
             triton_url=settings.triton_url,

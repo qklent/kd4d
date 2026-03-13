@@ -7,12 +7,15 @@ networks:
 
 services:
   triton:
-    image: nvcr.io/nvidia/tritonserver:24.01-py3-min
+    # Full Triton image includes onnxruntime backend for CPU inference.
+    # Run scripts/export_onnx.py first to create triton_model_repo/bert_base_ner/1/model.onnx
+    image: nvcr.io/nvidia/tritonserver:24.01-py3
     command: tritonserver --model-repository=/models
     volumes:
       - ./triton_model_repo:/models
     ports:
       - "8001:8001"
+    # CPU-only: no GPU/deploy config needed
 
   pii-proxy:
     build: .

@@ -3,8 +3,8 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     triton_url: str = "localhost:8001"
-    triton_model_name: str = "rubert_ner"
-    triton_tokenizer_name: str = "ai-forever/ruBert-base"
+    triton_model_name: str = "bert_base_ner"
+    triton_tokenizer_name: str = "dslim/bert-base-NER"
 
     llm_base_url: str = "http://localhost:8000/v1"
     llm_api_key: str = "EMPTY"
