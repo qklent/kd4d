@@ -2,6 +2,25 @@
 set -euo pipefail
 
 TASKS_DIR="$(cd "$(dirname "$0")/tasks" && pwd)"
+USE_PLANNER=false
+
+# Parse flags
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --plan)
+            USE_PLANNER=true
+            shift
+            ;;
+        -*)
+            echo "Unknown flag: $1"
+            echo "Usage: ./run_task.sh [--plan] [task-file]"
+            exit 1
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
 
 # Pick task file: from argument or random
 if [[ $# -ge 1 ]]; then
@@ -30,8 +49,19 @@ claude --agent task-clarifier \
     -p "Read and clarify the task in $TASK_FILE. Read CLAUDE.md first for project context. Update the task file with the refined spec and acceptance criteria." \
     --allowedTools "Read,Grep,Glob,Edit,Write"
 
+# Step 2 (optional): Plan
+if [[ "$USE_PLANNER" == true ]]; then
+    echo ""
+    echo "--- Step 2: Planning implementation with planner agent ---"
+    claude --agent planner \
+        -p "Create a detailed implementation plan for the task in $TASK_FILE. Read CLAUDE.md first, then read the full task file including the refined spec. Write the plan into the Implementation Plan section." \
+        --allowedTools "Read,Grep,Glob,Edit,Write"
+fi
+
+# Step 3: Implement
 echo ""
-echo "--- Step 2: Implementing task with coder agent ---"
+STEP_NUM=$( [[ "$USE_PLANNER" == true ]] && echo "3" || echo "2" )
+echo "--- Step $STEP_NUM: Implementing task with coder agent ---"
 claude --agent coder \
     -p "Implement the task described in $TASK_FILE. Read CLAUDE.md first, then read the full task file including the refined spec. Follow the spec and implement it step by step." \
     --allowedTools "Read,Write,Edit,Bash,Grep,Glob"

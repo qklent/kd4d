@@ -6,6 +6,8 @@ tools:
   - Read
   - Grep
   - Glob
+  - Edit
+  - Write
 ---
 
 # Planner Agent
