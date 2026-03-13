@@ -45,9 +45,7 @@ echo ""
 
 # Step 1: Clarify
 echo "--- Step 1: Clarifying task with task-clarifier agent ---"
-claude --agent task-clarifier \
-    -p "Read and clarify the task in $TASK_FILE. Read CLAUDE.md first for project context. Update the task file with the refined spec and acceptance criteria." \
-    --allowedTools "Read,Grep,Glob,Edit,Write"
+claude "/clarify-task $TASK_FILE"
 
 # Step 2 (optional): Plan
 if [[ "$USE_PLANNER" == true ]]; then
